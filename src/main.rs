@@ -1,3 +1,16 @@
+use crate::fraction::Fraction;
+
+mod fraction;
+
 fn main() {
-    println!("Hello, world!");
+    let fr_one = Fraction::new(1, 2);
+    println!("{}", fr_one);
+
+    let fr_two = Fraction::new(3, 4);
+    println!("{}", fr_two);
+
+    let fr_sum = fr_one + fr_two;
+    println!("{}", fr_sum);
+
+    println!("{}", Fraction::new(1, 3));
 }
