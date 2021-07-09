@@ -90,16 +90,6 @@ impl <T> Display for Fraction<T>
 /*
  * To Number
  */
-impl <T> From<Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
-          f64: From<T>
-{
-    fn from(fr: Fraction<T>) -> Self {
-        // f64::from(fr.num) / f64::from(fr.den)
-        (&fr).into()
-    }
-}
-
 impl <T> From<&Fraction<T>> for f64
     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
           f64: From<T>
@@ -109,12 +99,20 @@ impl <T> From<&Fraction<T>> for f64
     }
 }
 
+impl <T> From<Fraction<T>> for f64
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    fn from(fr: Fraction<T>) -> Self {
+        (&fr).into()
+    }
+}
+
 impl <T> From<&mut Fraction<T>> for f64
     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
           f64: From<T>
 {
     fn from(fr: &mut Fraction<T>) -> Self {
-        // f64::from(fr.num) / f64::from(fr.den)
         (&*fr).into()
     }
 }
