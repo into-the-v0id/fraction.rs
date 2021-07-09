@@ -122,38 +122,11 @@ impl <T> From<&mut Fraction<T>> for f64
 /*
  * To Fraction
  */
-impl From<i32> for Fraction<i32> {
-    fn from(num: i32) -> Self {
-        Fraction::new(num, 1)
-    }
-}
-
-impl From<i16> for Fraction<i16> {
-    fn from(num: i16) -> Self {
-        Fraction::new(num, 1)
-    }
-}
-
-impl From<i8> for Fraction<i8> {
-    fn from(num: i8) -> Self {
-        Fraction::new(num, 1)
-    }
-}
-
-impl From<u8> for Fraction<u8> {
-    fn from(num: u8) -> Self {
-        Fraction::new(num, 1)
-    }
-}
-
-impl From<u16> for Fraction<u16> {
-    fn from(num: u16) -> Self {
-        Fraction::new(num, 1)
-    }
-}
-
-impl From<u32> for Fraction<u32> {
-    fn from(num: u32) -> Self {
-        Fraction::new(num, 1)
+impl <T> From<T> for Fraction<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy + From<u8>,
+          f64: From<T>,
+{
+    fn from(data: T) -> Self {
+        Fraction::new(data, T::from(1))
     }
 }

@@ -13,4 +13,7 @@ fn main() {
     println!("{}", fr_sum);
 
     println!("{}", Fraction::new(1, 3));
+
+    let fr_three = Fraction::from(10);
+    println!("{}", fr_three);
 }
