@@ -36,14 +36,12 @@ impl <T> Fraction<T>
 
     /// Checks if number has 3 or less places after the decimal point
     pub fn is_simple(&self) -> bool {
-        let number = self.to_f64();
-        let string = number.to_string();
-        let mut split = string.split('.');
+        let string = self.to_f64().to_string();
+        let mut split = string
+            .split('.')
+            .skip(1);
 
-        split.next();
-        let decimal = split.next();
-
-        if let Some(decimal) = decimal {
+        if let Some(decimal) = split.next() {
             return decimal.len() <= 3;
         }
 
