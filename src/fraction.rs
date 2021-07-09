@@ -1,9 +1,9 @@
-use std::ops::{Add, Mul, Div, Sub};
+use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     num: T,
@@ -11,14 +11,14 @@ pub struct Fraction<T>
 }
 
 impl <T> Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     pub fn new(num: T, den: T) -> Fraction<T> {
-        Fraction {
+        Fraction::simplify(&Fraction {
             num,
             den
-        }
+        })
     }
 
     fn sync_base(one: &Fraction<T>, two: &Fraction<T>) -> (Fraction<T>, Fraction<T>) {
@@ -32,6 +32,50 @@ impl <T> Fraction<T>
                 den: two.den * one.den,
             }
         )
+    }
+
+    fn simplify(fraction: &Fraction<T>) -> Fraction<T> {
+        if fraction.den == T::from(0) {
+            return Fraction {
+                num: T::from(1),
+                den: T::from(0),
+            }
+        }
+
+        if fraction.num == T::from(0) {
+            return Fraction {
+                num: T::from(0),
+                den: T::from(1),
+            }
+        }
+
+        let divisor = Fraction::calc_greatest_common_divisor(fraction);
+
+        let mut fraction = Fraction {
+            num: fraction.num / divisor,
+            den: fraction.den / divisor,
+        };
+
+        if fraction.den < T::from(0) {
+            fraction = Fraction {
+                num: fraction.num * T::from(-1),
+                den: fraction.den * T::from(-1),
+            };
+        }
+
+        fraction
+    }
+
+    fn calc_greatest_common_divisor(fraction: &Fraction<T>) -> T {
+        let mut num = fraction.num;
+        let mut den = fraction.den;
+
+        while den != T::from(0) {
+            std::mem::swap(&mut num, &mut den);
+            den = den % num;
+        }
+
+        num
     }
 
     /// Checks if number has 2 or less places after the decimal point
@@ -58,7 +102,7 @@ impl <T> Fraction<T>
  */
 impl <D, T> Add<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     type Output = Fraction<T>;
@@ -75,7 +119,7 @@ impl <D, T> Add<D> for Fraction<T>
 
 impl <D, T> Sub<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     type Output = Fraction<T>;
@@ -92,7 +136,7 @@ impl <D, T> Sub<D> for Fraction<T>
 
 impl <D, T> Mul<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     type Output = Fraction<T>;
@@ -109,7 +153,7 @@ impl <D, T> Mul<D> for Fraction<T>
 
 impl <D, T> Div<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     type Output = Fraction<T>;
@@ -128,7 +172,7 @@ impl <D, T> Div<D> for Fraction<T>
  * Formatting
  */
 impl <T> Display for Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -144,7 +188,7 @@ impl <T> Display for Fraction<T>
  * To Number
  */
 impl <T> From<&Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     fn from(fr: &Fraction<T>) -> Self {
@@ -153,7 +197,7 @@ impl <T> From<&Fraction<T>> for f64
 }
 
 impl <T> From<Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     fn from(fr: Fraction<T>) -> Self {
@@ -162,7 +206,7 @@ impl <T> From<Fraction<T>> for f64
 }
 
 impl <T> From<&mut Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>
 {
     fn from(fr: &mut Fraction<T>) -> Self {
@@ -174,7 +218,7 @@ impl <T> From<&mut Fraction<T>> for f64
  * To Fraction
  */
 impl <T> From<T> for Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy + From<u8>,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
           f64: From<T>,
 {
     fn from(data: T) -> Self {
