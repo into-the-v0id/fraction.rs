@@ -2,7 +2,7 @@ use std::ops::{Add, Mul, Div, Sub};
 use std::fmt::{Display, Formatter, Debug};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
-pub struct Fraction<T = i32>
+pub struct Fraction<T>
     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
           f64: From<T>
 {
@@ -34,7 +34,7 @@ impl <T> Fraction<T>
         )
     }
 
-    /// Checks if number has 3 or less places after the decimal point
+    /// Checks if number has 2 or less places after the decimal point
     pub fn is_simple(&self) -> bool {
         let string = self.to_f64().to_string();
         let mut split = string
@@ -42,7 +42,7 @@ impl <T> Fraction<T>
             .skip(1);
 
         if let Some(decimal) = split.next() {
-            return decimal.len() <= 3;
+            return decimal.len() <= 2;
         }
 
         return true;
@@ -180,4 +180,13 @@ impl <T> From<T> for Fraction<T>
     fn from(data: T) -> Self {
         Fraction::new(data, T::from(1))
     }
+}
+
+/*
+ * Macro
+ */
+macro_rules! fr {
+    ($num:expr,$den:expr) => {
+        Fraction::new($num, $den)
+    };
 }

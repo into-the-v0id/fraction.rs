@@ -1,5 +1,6 @@
 use crate::fraction::Fraction;
 
+#[macro_use]
 mod fraction;
 
 fn main() {
@@ -16,4 +17,14 @@ fn main() {
 
     let fr_three = Fraction::from(10);
     println!("{}", fr_three);
+
+    println!(
+        "{:?}",
+        fr!(2,6)
+    );
+
+    println!(
+        "{:?}",
+        fr!(3,4) / fr!(1,2) - fr!(3,2)
+    );
 }
