@@ -21,4 +21,6 @@ fn main() {
     println!("{}", fr!(2,-6));
 
     println!("{}", fr!(3,4) / fr!(1,2) - fr!(3,2));
+
+    println!("{}", fr!(0.1) + fr!(0.2));
 }
