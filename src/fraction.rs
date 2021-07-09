@@ -1,21 +1,27 @@
-use std::ops::Add;
-use std::fmt::{Display, Formatter};
+use std::ops::{Add, Mul, Div, Sub};
+use std::fmt::{Display, Formatter, Debug};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
-pub struct Fraction {
-    num: i64,
-    den: i64,
+pub struct Fraction<T = i32>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    num: T,
+    den: T,
 }
 
-impl Fraction {
-    pub fn new(num: i64, den: i64) -> Self {
+impl <T> Fraction<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    pub fn new(num: T, den: T) -> Fraction<T> {
         Fraction {
             num,
             den
         }
     }
 
-    fn sync_base(one: &Fraction, two: &Fraction) -> (Fraction, Fraction) {
+    fn sync_base(one: &Fraction<T>, two: &Fraction<T>) -> (Fraction<T>, Fraction<T>) {
         (
             Fraction {
                 num: one.num * two.den,
@@ -49,12 +55,14 @@ impl Fraction {
     }
 }
 
-impl <T> Add<T> for Fraction
-    where T: Into<Fraction>
+impl <D, T> Add<D> for Fraction<T>
+    where D: Into<Fraction<T>>,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
 {
-    type Output = Fraction;
+    type Output = Fraction<T>;
 
-    fn add(self, other: T) -> Self::Output {
+    fn add(self, other: D) -> Self::Output {
         let other = other.into();
 
         let (one, two) = Fraction::sync_base(&self, &other);
@@ -66,7 +74,10 @@ impl <T> Add<T> for Fraction
     }
 }
 
-impl Display for Fraction {
+impl <T> Display for Fraction<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.is_simple() {
             write!(f, "{}", self.to_number())
@@ -79,29 +90,40 @@ impl Display for Fraction {
 /*
  * To Number
  */
-impl From<Fraction> for f64 {
-    fn from(fr: Fraction) -> Self {
-        fr.num as f64 / fr.den as f64
+impl <T> From<Fraction<T>> for f64
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    fn from(fr: Fraction<T>) -> Self {
+        // f64::from(fr.num) / f64::from(fr.den)
+        (&fr).into()
     }
 }
 
-impl From<&Fraction> for f64 {
-    fn from(fr: &Fraction) -> Self {
-        fr.num as f64 / fr.den as f64
+impl <T> From<&Fraction<T>> for f64
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    fn from(fr: &Fraction<T>) -> Self {
+        f64::from(fr.num) / f64::from(fr.den)
     }
 }
 
-impl From<&mut Fraction> for f64 {
-    fn from(fr: &mut Fraction) -> Self {
-        fr.num as f64 / fr.den as f64
+impl <T> From<&mut Fraction<T>> for f64
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    fn from(fr: &mut Fraction<T>) -> Self {
+        // f64::from(fr.num) / f64::from(fr.den)
+        (&*fr).into()
     }
 }
 
 /*
  * To Fraction
  */
-impl From<i64> for Fraction {
-    fn from(num: i64) -> Self {
-        Fraction::new(num, 1)
-    }
-}
+// impl From<i64> for Fraction {
+//     fn from(num: i64) -> Self {
+//         Fraction::new(num, 1)
+//     }
+// }
