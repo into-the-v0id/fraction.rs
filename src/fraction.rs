@@ -53,6 +53,9 @@ impl <T> Fraction<T>
     }
 }
 
+/*
+ * Operations
+ */
 impl <D, T> Add<D> for Fraction<T>
     where D: Into<Fraction<T>>,
           T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
@@ -70,6 +73,60 @@ impl <D, T> Add<D> for Fraction<T>
     }
 }
 
+impl <D, T> Sub<D> for Fraction<T>
+    where D: Into<Fraction<T>>,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    type Output = Fraction<T>;
+
+    fn sub(self, other: D) -> Self::Output {
+        let (one, two) = Fraction::sync_base(&self, &other.into());
+
+        Fraction::new(
+            one.num - two.num,
+            one.den
+        )
+    }
+}
+
+impl <D, T> Mul<D> for Fraction<T>
+    where D: Into<Fraction<T>>,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    type Output = Fraction<T>;
+
+    fn mul(self, other: D) -> Self::Output {
+        let other = other.into();
+
+        Fraction::new(
+            self.num * other.num,
+            self.den * other.den
+        )
+    }
+}
+
+impl <D, T> Div<D> for Fraction<T>
+    where D: Into<Fraction<T>>,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
+          f64: From<T>
+{
+    type Output = Fraction<T>;
+
+    fn div(self, other: D) -> Self::Output {
+        let other = other.into();
+
+        Fraction::new(
+            self.num * other.den,
+            self.den * other.num
+        )
+    }
+}
+
+/*
+ * Formatting
+ */
 impl <T> Display for Fraction<T>
     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Display + Debug + Clone + Copy,
           f64: From<T>
