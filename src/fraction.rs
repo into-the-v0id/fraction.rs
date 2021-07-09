@@ -63,9 +63,7 @@ impl <D, T> Add<D> for Fraction<T>
     type Output = Fraction<T>;
 
     fn add(self, other: D) -> Self::Output {
-        let other = other.into();
-
-        let (one, two) = Fraction::sync_base(&self, &other);
+        let (one, two) = Fraction::sync_base(&self, &other.into());
 
         Fraction::new(
             one.num + two.num,
