@@ -262,10 +262,13 @@ impl <T> From<T> for Fraction<T>
  * Macro
  */
 macro_rules! fr {
-    ($num:expr) => {
-        Fraction::from($num)
+    ($num:literal/$den:literal) => {
+        Fraction::new($num, $den)
     };
     ($num:expr,$den:expr) => {
         Fraction::new($num, $den)
+    };
+    ($num:expr) => {
+        Fraction::from($num)
     };
 }
