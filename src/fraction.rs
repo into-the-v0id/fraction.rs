@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
-use std::cmp::max;
+use num::Integer;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
@@ -50,14 +50,7 @@ impl <T> Fraction<T>
             }
         }
 
-        let mut fraction = fraction.clone();
-
-        let is_finite = (fraction.num % T::from(1)) == T::from(0);
-        if ! is_finite {
-            fraction = Fraction::make_parts_finite(&fraction);
-        }
-
-        let divisor = Fraction::calc_greatest_common_divisor(&fraction);
+        let divisor = Fraction::calc_greatest_common_divisor(fraction);
 
         let mut fraction = Fraction {
             num: fraction.num / divisor,
@@ -86,30 +79,6 @@ impl <T> Fraction<T>
         num
     }
 
-    fn make_parts_finite(fraction: &Fraction<T>) -> Fraction<T> {
-        let num_decimal_points = fraction.num.to_string()
-            .split('.')
-            .skip(1)
-            .next()
-            .unwrap_or("")
-            .len() as i32;
-
-        let den_decimal_points = fraction.den.to_string()
-            .split('.')
-            .skip(1)
-            .next()
-            .unwrap_or("")
-            .len() as i32;
-
-        let max_decimal_points = max(num_decimal_points, den_decimal_points);
-        let multiplier = T::from(10 * max_decimal_points);
-
-        Fraction {
-            num: fraction.num * multiplier,
-            den: fraction.den * multiplier,
-        }
-    }
-
     /// Checks if number has 2 or less places after the decimal point
     pub fn is_simple(&self) -> bool {
         let string = self.to_f64().to_string();
@@ -118,7 +87,7 @@ impl <T> Fraction<T>
             .skip(1);
 
         if let Some(decimal) = split.next() {
-            return decimal.len() <= 2;
+            return decimal.len() <= 3;
         }
 
         return true;
@@ -200,6 +169,23 @@ impl <D, T> Div<D> for Fraction<T>
     }
 }
 
+impl <D, T> Rem<D> for Fraction<T>
+    where D: Into<Fraction<T>>,
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i32>,
+          f64: From<T>
+{
+    type Output = Fraction<T>;
+
+    fn rem(self, other: D) -> Self::Output {
+        let (one, two) = Fraction::sync_base(&self, &other.into());
+
+        Fraction::new(
+            one.num % two.num,
+            one.den
+        )
+    }
+}
+
 /*
  * Formatting
  */
@@ -249,12 +235,45 @@ impl <T> From<&mut Fraction<T>> for f64
 /*
  * To Fraction
  */
+// impl <T> From<T> for Fraction<T>
+//     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i32>,
+//           f64: From<T>,
+// {
+//     fn from(data: T) -> Self {
+//         Fraction::new(data, T::from(1))
+//     }
+// }
+
 impl <T> From<T> for Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i32>,
+    where T: Integer + Display + Debug + Clone + Copy + From<i32>,
           f64: From<T>,
 {
     fn from(data: T) -> Self {
         Fraction::new(data, T::from(1))
+    }
+}
+
+impl From<f64> for Fraction<i32> {
+    fn from(data: f64) -> Self {
+        let decimal_points = data.to_string()
+            .split('.')
+            .skip(1)
+            .next()
+            .unwrap_or("")
+            .len();
+
+        let multiplier = (10 as i32).pow(decimal_points as u32);
+
+        Fraction::new(
+            (data * (multiplier as f64)) as i32,
+            multiplier,
+        )
+    }
+}
+
+impl From<f32> for Fraction<i32> {
+    fn from(data: f32) -> Self {
+        Fraction::from(data as f64)
     }
 }
 
@@ -263,10 +282,10 @@ impl <T> From<T> for Fraction<T>
  */
 macro_rules! fr {
     ($num:literal/$den:literal) => {
-        Fraction::new($num, $den)
+        Fraction::from($num) / Fraction::from($den)
     };
     ($num:expr,$den:expr) => {
-        Fraction::new($num, $den)
+        Fraction::from($num) / Fraction::from($den)
     };
     ($num:expr) => {
         Fraction::from($num)
