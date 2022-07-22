@@ -1,6 +1,5 @@
 use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
-use num::Integer;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
@@ -235,17 +234,9 @@ impl <T> From<&mut Fraction<T>> for f64
 /*
  * To Fraction
  */
-// impl <T> From<T> for Fraction<T>
-//     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i32>,
-//           f64: From<T>,
-// {
-//     fn from(data: T) -> Self {
-//         Fraction::new(data, T::from(1))
-//     }
-// }
-
 impl <T> From<T> for Fraction<T>
-    where T: Integer + Display + Debug + Clone + Copy + From<i32>,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i32>,
+          T: Into<i128>, // only implement for integers
           f64: From<T>,
 {
     fn from(data: T) -> Self {
