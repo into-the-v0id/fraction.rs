@@ -79,7 +79,7 @@ impl <T> Fraction<T>
         num
     }
 
-    /// Checks if number has 2 or less places after the decimal point
+    /// Checks if number has 3 or less places after the decimal point
     pub fn is_simple(&self) -> bool {
         let string = self.to_f64().to_string();
         let mut split = string
