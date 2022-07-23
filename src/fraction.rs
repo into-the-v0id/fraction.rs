@@ -215,13 +215,13 @@ impl <T> From<T> for Fraction<T>
     }
 }
 
-impl TryFrom<f64> for Fraction<i32> {
+impl TryFrom<f64> for Fraction<i128> {
     type Error = ();
 
     fn try_from(data: f64) -> Result<Self, Self::Error> {
         let mut data_number_string = data.to_string()
             .replace('.', "");
-        let mut max_number_string = i32::MAX.to_string();
+        let mut max_number_string = i128::MAX.to_string();
         let max_len = max(data_number_string.len(), max_number_string.len());
         data_number_string = format!("{:0>len$}", data_number_string, len=max_len);
         max_number_string = format!("{:0>len$}", max_number_string, len=max_len);
@@ -237,18 +237,18 @@ impl TryFrom<f64> for Fraction<i32> {
             .unwrap_or("")
             .len();
 
-        let multiplier = (10 as i32).pow(decimal_points as u32);
+        let multiplier = (10 as i128).pow(decimal_points as u32);
 
         Ok(
             Fraction::new(
-                (data * (multiplier as f64)) as i32,
+                (data * (multiplier as f64)) as i128,
                 multiplier,
             )
         )
     }
 }
 
-impl TryFrom<f32> for Fraction<i32> {
+impl TryFrom<f32> for Fraction<i128> {
     type Error = ();
 
     fn try_from(data: f32) -> Result<Self, Self::Error> {

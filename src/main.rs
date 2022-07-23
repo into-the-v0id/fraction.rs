@@ -29,5 +29,5 @@ fn main() {
 
     println!("{:?}", Fraction::try_from(0.123));
 
-    println!("{:?}", Fraction::try_from(i32::MAX as f64 + 123.456));
+    println!("{:?}", Fraction::try_from(i128::MAX as f64 * 1.5));
 }
