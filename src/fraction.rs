@@ -1,3 +1,5 @@
+use std::cmp::max;
+use std::convert::TryFrom;
 use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
 
@@ -244,8 +246,21 @@ impl <T> From<T> for Fraction<T>
     }
 }
 
-impl From<f64> for Fraction<i32> {
-    fn from(data: f64) -> Self {
+impl TryFrom<f64> for Fraction<i32> {
+    type Error = ();
+
+    fn try_from(data: f64) -> Result<Self, Self::Error> {
+        let mut data_number_string = data.to_string()
+            .replace('.', "");
+        let mut max_number_string = i32::MAX.to_string();
+        let max_len = max(data_number_string.len(), max_number_string.len());
+        data_number_string = format!("{:0>len$}", data_number_string, len=max_len);
+        max_number_string = format!("{:0>len$}", max_number_string, len=max_len);
+
+        if data_number_string > max_number_string {
+            return Err(());
+        }
+
         let decimal_points = data.to_string()
             .split('.')
             .skip(1)
@@ -255,16 +270,20 @@ impl From<f64> for Fraction<i32> {
 
         let multiplier = (10 as i32).pow(decimal_points as u32);
 
-        Fraction::new(
-            (data * (multiplier as f64)) as i32,
-            multiplier,
+        Ok(
+            Fraction::new(
+                (data * (multiplier as f64)) as i32,
+                multiplier,
+            )
         )
     }
 }
 
-impl From<f32> for Fraction<i32> {
-    fn from(data: f32) -> Self {
-        Fraction::from(data as f64)
+impl TryFrom<f32> for Fraction<i32> {
+    type Error = ();
+
+    fn try_from(data: f32) -> Result<Self, Self::Error> {
+        Fraction::try_from(data as f64)
     }
 }
 

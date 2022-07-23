@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use crate::fraction::Fraction;
 
 #[macro_use]
@@ -22,15 +23,11 @@ fn main() {
 
     println!("{}", fr!(3,4) / fr!(1,2) - fr!(3,2));
 
-    println!("{}", fr!(0.1) + fr!(0.2));
-
-    println!("{}", fr!(0.375));
-
     println!("{}", fr!(1/3));
 
     println!("{}", fr!(1, 3));
 
-    println!("{}", fr!(0.1/0.3));
+    println!("{:?}", Fraction::try_from(0.123));
 
-    println!("{}", fr!(fr!(1/3)/fr!(2/3)));
+    println!("{:?}", Fraction::try_from(i32::MAX as f64 + 123.456));
 }
