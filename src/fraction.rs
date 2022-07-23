@@ -1,7 +1,7 @@
-use std::cmp::max;
 use std::convert::TryFrom;
 use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
@@ -243,40 +243,30 @@ impl <T> From<T> for Fraction<T>
 }
 
 impl TryFrom<f64> for Fraction<i128> {
-    type Error = ();
+    type Error = <i128 as FromStr>::Err;
 
     fn try_from(data: f64) -> Result<Self, Self::Error> {
-        let mut data_number_string = data.to_string()
-            .replace('.', "");
-        let mut max_number_string = i128::MAX.to_string();
-        let max_len = max(data_number_string.len(), max_number_string.len());
-        data_number_string = format!("{:0>len$}", data_number_string, len=max_len);
-        max_number_string = format!("{:0>len$}", max_number_string, len=max_len);
+        let data_string = data.to_string();
 
-        if data_number_string > max_number_string {
-            return Err(());
-        }
+        let num = data_string
+            .replace('.' , "")
+            .parse::<i128>()?;
 
-        let decimal_points = data.to_string()
+        let decimal_points = data_string
             .split('.')
             .skip(1)
             .next()
             .unwrap_or("")
             .len();
 
-        let multiplier = (10 as i128).pow(decimal_points as u32);
+        let den = (10 as i128).pow(decimal_points as u32);
 
-        Ok(
-            Fraction::new(
-                (data * (multiplier as f64)) as i128,
-                multiplier,
-            )
-        )
+        Ok(Fraction::new(num, den))
     }
 }
 
 impl TryFrom<f32> for Fraction<i128> {
-    type Error = ();
+    type Error = <Self as TryFrom<f64>>::Error;
 
     fn try_from(data: f32) -> Result<Self, Self::Error> {
         Fraction::try_from(data as f64)
