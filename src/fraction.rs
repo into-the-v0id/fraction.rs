@@ -203,6 +203,33 @@ impl <T> From<&mut Fraction<T>> for f64
     }
 }
 
+impl <T> From<&Fraction<T>> for f32
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
+          T: Into<f32>
+{
+    fn from(fr: &Fraction<T>) -> Self {
+        fr.num.into() / fr.den.into()
+    }
+}
+
+impl <T> From<Fraction<T>> for f32
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
+          T: Into<f32>
+{
+    fn from(fr: Fraction<T>) -> Self {
+        (&fr).into()
+    }
+}
+
+impl <T> From<&mut Fraction<T>> for f32
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
+          T: Into<f32>
+{
+    fn from(fr: &mut Fraction<T>) -> Self {
+        (&*fr).into()
+    }
+}
+
 /*
  * To Fraction
  */
