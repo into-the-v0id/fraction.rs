@@ -254,12 +254,11 @@ impl TryFrom<f64> for Fraction<i128> {
 
         let decimal_points = data_string
             .split('.')
-            .skip(1)
-            .next()
+            .nth(1)
             .unwrap_or("")
             .len();
 
-        let den = (10 as i128).pow(decimal_points as u32);
+        let den = 10i128.pow(decimal_points as u32);
 
         Ok(Fraction::new(num, den))
     }
