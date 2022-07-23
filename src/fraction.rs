@@ -5,16 +5,14 @@ use std::fmt::{Display, Formatter, Debug};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     num: T,
     den: T,
 }
 
 impl <T> Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     pub fn new(num: T, den: T) -> Fraction<T> {
         Fraction::simplify(&Fraction {
@@ -104,8 +102,7 @@ impl <T> Fraction<T>
  */
 impl <D, T> Add<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     type Output = Fraction<T>;
 
@@ -121,8 +118,7 @@ impl <D, T> Add<D> for Fraction<T>
 
 impl <D, T> Sub<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     type Output = Fraction<T>;
 
@@ -138,8 +134,7 @@ impl <D, T> Sub<D> for Fraction<T>
 
 impl <D, T> Mul<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     type Output = Fraction<T>;
 
@@ -155,8 +150,7 @@ impl <D, T> Mul<D> for Fraction<T>
 
 impl <D, T> Div<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     type Output = Fraction<T>;
 
@@ -172,8 +166,7 @@ impl <D, T> Div<D> for Fraction<T>
 
 impl <D, T> Rem<D> for Fraction<T>
     where D: Into<Fraction<T>>,
-          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+          T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     type Output = Fraction<T>;
 
@@ -191,8 +184,7 @@ impl <D, T> Rem<D> for Fraction<T>
  * Formatting
  */
 impl <T> Display for Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.is_simple() {
@@ -207,17 +199,15 @@ impl <T> Display for Fraction<T>
  * To Number
  */
 impl <T> From<&Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     fn from(fr: &Fraction<T>) -> Self {
-        f64::from(fr.num) / f64::from(fr.den)
+        fr.num.into() / fr.den.into()
     }
 }
 
 impl <T> From<Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     fn from(fr: Fraction<T>) -> Self {
         (&fr).into()
@@ -225,8 +215,7 @@ impl <T> From<Fraction<T>> for f64
 }
 
 impl <T> From<&mut Fraction<T>> for f64
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          f64: From<T>
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     fn from(fr: &mut Fraction<T>) -> Self {
         (&*fr).into()
@@ -237,9 +226,8 @@ impl <T> From<&mut Fraction<T>> for f64
  * To Fraction
  */
 impl <T> From<T> for Fraction<T>
-    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8>,
-          T: Into<i128>, // only implement for integers
-          f64: From<T>,
+    where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>,
+          T: Into<i128> // only implement for integers
 {
     fn from(data: T) -> Self {
         Fraction::new(data, T::from(1))
