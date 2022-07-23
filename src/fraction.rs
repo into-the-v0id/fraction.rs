@@ -78,20 +78,6 @@ impl <T> Fraction<T>
         num
     }
 
-    /// Checks if number has 3 or less places after the decimal point
-    pub fn is_simple(&self) -> bool {
-        let string = self.to_f64().to_string();
-        let mut split = string
-            .split('.')
-            .skip(1);
-
-        if let Some(decimal) = split.next() {
-            return decimal.len() <= 3;
-        }
-
-        return true;
-    }
-
     pub fn to_f64(&self) -> f64 {
         self.into()
     }
@@ -187,11 +173,7 @@ impl <T> Display for Fraction<T>
     where T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Sub<Output = T> + Rem<Output = T> + PartialEq + PartialOrd + Display + Debug + Clone + Copy + From<i8> + Into<f64>
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        if self.is_simple() {
-            write!(f, "{}", self.to_f64())
-        } else {
-            write!(f, "{}/{}", self.num, self.den)
-        }
+        write!(f, "{}/{}", self.num, self.den)
     }
 }
 
