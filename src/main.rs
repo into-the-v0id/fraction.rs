@@ -30,4 +30,6 @@ fn main() {
     println!("{:?}", Fraction::try_from(0.123));
 
     println!("{:?}", Fraction::try_from(i128::MAX as f64 * 1.5));
+
+    println!("{:?}", Fraction::try_from(i128::MAX as f64 * 1.5 + 0.12345));
 }

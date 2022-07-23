@@ -1,7 +1,6 @@
 use std::convert::TryFrom;
 use std::ops::{Add, Mul, Div, Sub, Rem};
 use std::fmt::{Display, Formatter, Debug};
-use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Copy, Clone)]
 pub struct Fraction<T>
@@ -243,24 +242,28 @@ impl <T> From<T> for Fraction<T>
 }
 
 impl TryFrom<f64> for Fraction<i128> {
-    type Error = <i128 as FromStr>::Err;
+    type Error = ();
 
     fn try_from(data: f64) -> Result<Self, Self::Error> {
-        let data_string = data.to_string();
+        let mut num = data;
+        let mut den: i128 = 1;
 
-        let num = data_string
-            .replace('.' , "")
-            .parse::<i128>()?;
+        while num % 1.0 != 0.0 {
+            // lossy multiplication guard
+            if num > f64::MAX / 10.0 || den > i128::MAX / 10 {
+                return Err(());
+            }
 
-        let decimal_points = data_string
-            .split('.')
-            .nth(1)
-            .unwrap_or("")
-            .len();
+            num *= 10.0;
+            den *= 10;
+        }
 
-        let den = 10i128.pow(decimal_points as u32);
+        // lossy conversion guard
+        if num > i128::MAX as f64 {
+            return Err(());
+        }
 
-        Ok(Fraction::new(num, den))
+        Ok(Fraction::new(num as i128, den))
     }
 }
 
